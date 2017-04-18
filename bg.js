@@ -1,4 +1,13 @@
+var RELOAD_DATA_TIMEOUT_MIN = 5000
+var RELOAD_DATA_TIMEOUT_REGULAR = 1000 * 60 * 10 // 10 mins
+var RELOAD_DATA_TIMEOUT_MAX = 1000 * 60 * 60 // 1 hour
+
 var GITHUB_EVENTS_URL = 'https://api.github.com/users/dsavenko/events'
+
+var loadingUserData = false
+var reloadDataTimeout = RELOAD_DATA_TIMEOUT_MIN
+
+var todayEvents = -1
 
 function loadUrl(url, callback) {
     var x = new XMLHttpRequest()
@@ -46,28 +55,47 @@ function countTodayEvents(events) {
 
 function eventColor(count) {
     if (count <= 0) {
-        return '#ebedf0'
+        return '#cc1100'
     } else if (0 < count && count <= 4) {
         return '#c6e48b'
     } else if (4 < count && count <= 6) {
         return '#7bc96f'
     } else if (6 < count && count <= 10) {
         return '#239a3b'
-    } else {
+    } else if (0 < count) {
         return '#196127'
-    } 
+    } else {
+        return ''
+    }
 }
+
+function scheduleRequest(cb) {
+    loadJson(GITHUB_EVENTS_URL, function(err, data) {
+        if (err) {
+            reloadDataTimeout = Math.min(RELOAD_DATA_TIMEOUT_MAX, reloadDataTimeout * 2)
+            return setTimeout(scheduleRequest, reloadDataTimeout)
+        }
+        reloadDataTimeout = RELOAD_DATA_TIMEOUT_MIN
+        cb(data)
+    })
+}
+
+function scheduleReloadUserData() {
+    if (!loadingUserData) {
+        loadingUserData = true
+        scheduleRequest(function(events) {
+            loadingUserData = false
+            todayEvents = countTodayEvents(events)
+            setTimeout(scheduleReloadUserData, RELOAD_DATA_TIMEOUT_REGULAR)
+        })
+    }
+}
+
+scheduleReloadUserData()
 
 xBrowser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if ('get_color' == request.name) {
-        loadJson(GITHUB_EVENTS_URL, function(e, events) {
-            if (e) {
-                sendResponse({error: e})
-            } else {
-                var todayEvents = countTodayEvents(events)
-                sendResponse({error: undefined, color: eventColor(todayEvents)})
-            }
-        })
+        sendResponse({error: undefined, color: eventColor(todayEvents), todayEvents: todayEvents})
         return true
     }
     return false
