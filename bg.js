@@ -1,5 +1,5 @@
 var RELOAD_DATA_TIMEOUT_MIN = 5000
-var RELOAD_DATA_TIMEOUT_REGULAR = 1000 * 60 * 10 // 10 mins
+var RELOAD_DATA_TIMEOUT_REGULAR = 1000 * 60 * 6 // 6 mins
 var RELOAD_DATA_TIMEOUT_MAX = 1000 * 60 * 60 // 1 hour
 
 var GITHUB_EVENTS_URL = 'https://api.github.com/users/dsavenko/events'

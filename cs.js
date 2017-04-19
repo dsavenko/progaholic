@@ -1,8 +1,11 @@
 
-function setBorder(color, todayEvents) {
-    var div = document.createElement('div')
-    div.title = '' + todayEvents + ' contribution' + (1 == todayEvents ? '' : 's') + ' today'
-    div.style.backgroundColor = color
+var UPDATE_DELAY = 1000 * 60 // 1 min
+
+var div = null
+var oldEvents = -1
+
+function createBorderDiv() {
+    div = document.createElement('div')
     div.style.zIndex = '2147483647'
     div.style.position = 'fixed'
     div.style.top = '0'
@@ -12,10 +15,24 @@ function setBorder(color, todayEvents) {
     document.documentElement.appendChild(div)
 }
 
-xBrowser.runtime.sendMessage({name: 'get_color'}, function(resp) {
-    if (resp.error) {
-        console.log('Error loading GitHub', resp.error)
-    } else if ('' != resp.color) {
-        setBorder(resp.color, resp.todayEvents)
+function setBorder(color, todayEvents) {
+    if (!div) {
+        createBorderDiv()
     }
-})
+    div.title = '' + todayEvents + ' contribution' + (1 == todayEvents ? '' : 's') + ' today'
+    div.style.backgroundColor = color
+}
+
+function update() {
+    xBrowser.runtime.sendMessage({name: 'get_color'}, function(resp) {
+        if (resp.error) {
+            console.log('Error loading GitHub', resp.error)
+        } else if (oldEvents != resp.todayEvents) {
+            oldEvents = resp.todayEvents
+            setBorder(resp.color, resp.todayEvents)
+        }
+        setTimeout(update, UPDATE_DELAY)
+    })
+}
+
+update()
