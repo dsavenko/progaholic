@@ -9,7 +9,7 @@
 
     "permissions": [
         "storage",
-        "https://api.github.com"
+        "https://api.github.com/*"
     ],
 
     "background": {
@@ -19,5 +19,10 @@
     "content_scripts": [{
         "matches": ["*://*/*"],
         "js": ["x.js", "cs.js"]
-    }]
+    }],
+
+    "options_ui": {
+        "page": "options.html",
+        "chrome_style": true
+    }
 }

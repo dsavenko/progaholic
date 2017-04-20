@@ -24,8 +24,6 @@ var RELOAD_DATA_TIMEOUT_MIN = 5000
 var RELOAD_DATA_TIMEOUT_REGULAR = 1000 * 60 * 6 // 6 mins
 var RELOAD_DATA_TIMEOUT_MAX = 1000 * 60 * 60 // 1 hour
 
-var GITHUB_EVENTS_URL = 'https://api.github.com/users/dsavenko/events'
-
 var loadingUserData = false
 var reloadDataTimeout = RELOAD_DATA_TIMEOUT_MIN
 
@@ -91,29 +89,66 @@ function eventColor(count) {
     }
 }
 
-function scheduleRequest(cb) {
-    loadJson(GITHUB_EVENTS_URL, function(err, data) {
-        if (err) {
-            reloadDataTimeout = Math.min(RELOAD_DATA_TIMEOUT_MAX, reloadDataTimeout * 2)
-            return setTimeout(scheduleRequest, reloadDataTimeout)
+function createGithubEventsUrl(username, accessToken) {
+    return 'https://api.github.com/users/' + username + '/events' + ('' == accessToken ? '' : '?accessToken=' + accessToken)
+}
+
+function githubEventsUrl(cb) {
+    xStore.get({
+        github_username: '',
+        github_token: ''
+    }, function(items) {
+        if (!items) {
+            cb('Cant access items')
+        } else if ('' == items.github_username) {
+            cb('Github username is not set')
+        } else {
+            cb(undefined, createGithubEventsUrl(items.github_username, items.github_token))
         }
-        reloadDataTimeout = RELOAD_DATA_TIMEOUT_MIN
-        cb(data)
+    })    
+}
+
+function scheduleRequest(cb) {
+    githubEventsUrl(function(err, url) {
+        if (err) {
+            cb(err)
+        } else {
+            loadJson(url, function(err2, data) {
+                if (err2) {
+                    reloadDataTimeout = Math.min(RELOAD_DATA_TIMEOUT_MAX, reloadDataTimeout * 2)
+                    return setTimeout(function() { scheduleRequest(cb) }, reloadDataTimeout)
+                }
+                reloadDataTimeout = RELOAD_DATA_TIMEOUT_MIN
+                cb(undefined, data)
+            })
+        }
     })
 }
 
-function scheduleReloadUserData() {
+function scheduleReloadUserData(singleShot) {
     if (!loadingUserData) {
         loadingUserData = true
-        scheduleRequest(function(events) {
+        scheduleRequest(function(err, events) {
             loadingUserData = false
-            todayEvents = countTodayEvents(events)
-            setTimeout(scheduleReloadUserData, RELOAD_DATA_TIMEOUT_REGULAR)
+            if (err) {
+                console.log('error making request to Github', err)
+            } else {
+                todayEvents = countTodayEvents(events)
+            }
+            if (!singleShot) {
+                setTimeout(scheduleReloadUserData, RELOAD_DATA_TIMEOUT_REGULAR)
+            }
         })
     }
 }
 
-scheduleReloadUserData()
+githubEventsUrl(function(err, url) {
+    if (err) {
+        xBrowser.runtime.openOptionsPage()
+    } else {
+        scheduleReloadUserData()
+    }
+}) 
 
 xBrowser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if ('get_color' == request.name) {

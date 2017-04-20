@@ -20,42 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-var UPDATE_DELAY = 1000 * 60 // 1 min
-
-var div = null
-var oldEvents = -1
-
-function createBorderDiv() {
-    div = document.createElement('div')
-    div.style.zIndex = '2147483647'
-    div.style.position = 'fixed'
-    div.style.top = '0'
-    div.style.left = '0'
-    div.style.width = '10px'
-    div.style.height = '100%'
-    document.documentElement.appendChild(div)
-}
-
-function setBorder(color, todayEvents) {
-    if (!div) {
-        createBorderDiv()
-    }
-    div.title = '' + todayEvents + ' contribution' + (1 == todayEvents ? '' : 's') + ' today'
-    div.style.backgroundColor = color
-}
-
-function update() {
-    xBrowser.runtime.sendMessage({name: 'get_color'}, function(resp) {
-        if (!resp) {
-            console.log('Error contacting the background script')
-        } else if (resp.error) {
-            console.log('Error loading GitHub', resp.error)
-        } else if (oldEvents != resp.todayEvents) {
-            oldEvents = resp.todayEvents
-            setBorder(resp.color, resp.todayEvents)
-        }
-        setTimeout(update, UPDATE_DELAY)
+function saveOptions(e) {
+    e.preventDefault()
+    xStore.set({
+        github_username: document.getElementById('github_username').value,
+        github_token: document.getElementById('github_token').value
+    }, function() {
+        // Update status to let user know options were saved.
+        var status = document.getElementById('status')
+        status.textContent = 'Options saved.'
+        setTimeout(function() {
+            status.textContent = ''
+        }, 750)
+        xBrowser.runtime.getBackgroundPage(function(bgPage) {
+            bgPage.scheduleReloadUserData(true)
+        })
     })
 }
 
-update()
+function restoreOptions() {
+    xStore.get({
+        github_username: '',
+        github_token: ''
+    }, function(items) {
+        document.getElementById('github_username').value = items.github_username
+        document.getElementById('github_token').value = items.github_token
+    })
+}
+
+document.addEventListener('DOMContentLoaded', restoreOptions)
+document.getElementById('save').addEventListener('click', saveOptions)

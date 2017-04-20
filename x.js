@@ -23,4 +23,13 @@
 // Cross-browser compatibility tricks, which apply everywhere
 
 var xBrowser = typeof chrome != 'undefined' ? chrome : browser
-var xStore = typeof xBrowser.storage.sync != 'undefined' ? xBrowser.storage.sync : xBrowser.storage.local
+
+var xStore = xBrowser.storage.local
+
+//
+// TODO: probably should move to storage.sync later, like this:
+//
+// 		var xStore = typeof xBrowser.storage.sync != 'undefined' ? xBrowser.storage.sync : xBrowser.storage.local
+//
+// However, in FF 52 storage.sync is defined, but when you try to use it, and the user didn't enable it, an error occurs
+//
