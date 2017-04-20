@@ -145,9 +145,8 @@ function scheduleReloadUserData(singleShot) {
 githubEventsUrl(function(err, url) {
     if (err) {
         xBrowser.runtime.openOptionsPage()
-    } else {
-        scheduleReloadUserData()
     }
+    scheduleReloadUserData()
 }) 
 
 xBrowser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
