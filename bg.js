@@ -29,6 +29,13 @@ var reloadDataTimeout = RELOAD_DATA_TIMEOUT_MIN
 
 var todayEvents = -1
 
+var config = {
+    github_username: '',
+    github_token: '',
+    colors: ['#cc1100', '#c6e48b', '#7bc96f', '#239a3b', '#196127'],
+    counts: [        0,         4,         6,        10]
+}
+
 function loadUrl(url, callback) {
     var x = new XMLHttpRequest()
     x.open('GET', url)
@@ -74,19 +81,15 @@ function countTodayEvents(events) {
 }
 
 function eventColor(count) {
-    if (count <= 0) {
-        return '#cc1100'
-    } else if (0 < count && count <= 4) {
-        return '#c6e48b'
-    } else if (4 < count && count <= 6) {
-        return '#7bc96f'
-    } else if (6 < count && count <= 10) {
-        return '#239a3b'
-    } else if (0 < count) {
-        return '#196127'
-    } else {
+    if (0 > count) {
         return ''
     }
+    for (var i = config.counts.length - 1; i >= 0; --i) {
+        if (count > config.counts[i]) {
+            return config.colors[i+1]
+        }
+    }
+    return config.colors[0]
 }
 
 function createGithubEventsUrl(username, accessToken) {
@@ -142,17 +145,51 @@ function scheduleReloadUserData(singleShot) {
     }
 }
 
-githubEventsUrl(function(err, url) {
-    if (err) {
-        xBrowser.runtime.openOptionsPage()
-    }
-    scheduleReloadUserData()
-}) 
+function loadConfig(cb) {
+    xStore.get({
+        github_username: '',
+        github_token: '',
+        colors: [],
+        counts: []
+    }, function(loadedConfig) {
+        if (loadedConfig) {
+            config = loadedConfig
+        }
+        if (cb) {
+            cb(loadedConfig)
+        }
+    })    
+}
+
+function saveConfig(newConfig, cb) {
+    xStore.set(newConfig, function() {
+        config = newConfig
+        scheduleReloadUserData(true)
+        cb()
+    })
+}
 
 xBrowser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if ('get_color' == request.name) {
         sendResponse({error: undefined, color: eventColor(todayEvents), todayEvents: todayEvents})
         return true
+    } else if ('set_config' == request.name) {
+        saveConfig(request.config, function() {
+            sendResponse({error: undefined})
+        })
+        return true
+    } else if ('get_config' == request.name) {
+        sendResponse({error: undefined, config: config})
+        return true
     }
     return false
+})
+
+loadConfig(function() {
+    githubEventsUrl(function(err, url) {
+        if (err) {
+            xBrowser.runtime.openOptionsPage()
+        }
+        scheduleReloadUserData()
+    }) 
 })

@@ -20,33 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-function saveOptions(e) {
+function saveConfig(e) {
     e.preventDefault()
-    xStore.set({
+    var newColors = []
+    var newCounts = []
+    for (var i = 0; i < 5; ++i) {
+        newColors.push(document.getElementById('color_' + i).value)
+        if (i < 4) {
+            newCounts.push(document.getElementById('count_' + i).value)
+        }
+    }
+    var newConfig = {
         github_username: document.getElementById('github_username').value,
-        github_token: document.getElementById('github_token').value
-    }, function() {
+        github_token: document.getElementById('github_token').value,
+        colors: newColors,
+        counts: newCounts
+    }
+    xBrowser.runtime.sendMessage({name: 'set_config', config: newConfig}, function(resp) {
         // Update status to let user know options were saved.
         var status = document.getElementById('status')
         status.textContent = 'Options saved.'
         setTimeout(function() {
             status.textContent = ''
         }, 750)
-        xBrowser.runtime.getBackgroundPage(function(bgPage) {
-            bgPage.scheduleReloadUserData(true)
-        })
     })
 }
 
-function restoreOptions() {
-    xStore.get({
-        github_username: '',
-        github_token: ''
-    }, function(items) {
-        document.getElementById('github_username').value = items.github_username
-        document.getElementById('github_token').value = items.github_token
+function restoreConfig() {
+    xBrowser.runtime.sendMessage({name: 'get_config'}, function(resp) {
+        var config = resp.config
+        document.getElementById('github_username').value = config.github_username
+        document.getElementById('github_token').value = config.github_token
+        for (var i = 0; i < 5; ++i) {
+            document.getElementById('color_' + i).value = config.colors[i]
+            if (i < 4) {
+                document.getElementById('count_' + i).value = config.counts[i]
+            }
+        }
     })
 }
 
-document.addEventListener('DOMContentLoaded', restoreOptions)
-document.getElementById('save').addEventListener('click', saveOptions)
+document.addEventListener('DOMContentLoaded', restoreConfig)
+document.getElementById('save').addEventListener('click', saveConfig)
