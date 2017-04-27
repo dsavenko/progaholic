@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Cross-browser compatibility tricks, which apply everywhere
+// =================== Cross-browser compatibility tricks =====================
 
 var xBrowser = typeof chrome != 'undefined' ? chrome : browser
 

@@ -22,26 +22,66 @@
 
 var UPDATE_DELAY = 1000 * 60 // 1 min
 
-var div = null
 var oldEvents = -1
 
-function createBorderDiv() {
-    div = document.createElement('div')
+var TOP = 0
+var RIGHT = 1
+var BOTTOM = 2
+var LEFT = 3
+
+var borderDivs = null
+
+function createBorderDiv(position, thickness) {
+    var div = document.createElement('div')
     div.style.zIndex = '2147483647'
     div.style.position = 'fixed'
-    div.style.top = '0'
-    div.style.left = '0'
-    div.style.width = '10px'
-    div.style.height = '100%'
+    switch (position) {
+    case LEFT:
+        div.style.top = '0'
+        div.style.left = '0'
+        div.style.width = thickness + 'px'
+        div.style.height = '100%'
+        break;
+
+    case RIGHT:
+        div.style.top = '0'
+        div.style.right = '0'
+        div.style.width = thickness + 'px'
+        div.style.height = '100%'
+        break;
+
+    case TOP:
+        div.style.top = '0'
+        div.style.left = '0'
+        div.style.height = thickness + 'px'
+        div.style.width = '100%'
+        break;
+
+    case BOTTOM:
+        div.style.bottom = '0'
+        div.style.left = '0'
+        div.style.height = thickness + 'px'
+        div.style.width = '100%'
+        break;
+    }
     document.documentElement.appendChild(div)
+    return div
+}
+
+function createBorderDivs(borders) {
+    borderDivs = []
+    borderDivs.push(createBorderDiv(TOP, borders[TOP]))
+    borderDivs.push(createBorderDiv(RIGHT, borders[RIGHT]))
+    borderDivs.push(createBorderDiv(BOTTOM, borders[BOTTOM]))
+    borderDivs.push(createBorderDiv(LEFT, borders[LEFT]))
 }
 
 function setBorder(color, todayEvents) {
-    if (!div) {
-        createBorderDiv()
+    for (var i = 0; i < borderDivs.length; ++i) {
+        var div = borderDivs[i]
+        div.title = '' + todayEvents + ' contribution' + (1 == todayEvents ? '' : 's') + ' today'
+        div.style.backgroundColor = color
     }
-    div.title = '' + todayEvents + ' contribution' + (1 == todayEvents ? '' : 's') + ' today'
-    div.style.backgroundColor = color
 }
 
 function update() {
@@ -52,6 +92,9 @@ function update() {
             console.log('Error loading GitHub', resp.error)
         } else if (oldEvents != resp.todayEvents) {
             oldEvents = resp.todayEvents
+            if (null == borderDivs) {
+                createBorderDivs(resp.config.borders)
+            }
             setBorder(resp.color, resp.todayEvents)
         }
         setTimeout(update, UPDATE_DELAY)

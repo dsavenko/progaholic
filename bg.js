@@ -33,7 +33,8 @@ var config = {
     github_username: '',
     github_token: '',
     colors: ['#cc1100', '#c6e48b', '#7bc96f', '#239a3b', '#196127'],
-    counts: [        0,         4,         6,        10]
+    counts: [        0,         4,         6,        10],
+    borders: [0, 0, 0, 10]
 }
 
 function loadUrl(url, callback) {
@@ -146,12 +147,7 @@ function scheduleReloadUserData(singleShot) {
 }
 
 function loadConfig(cb) {
-    xStore.get({
-        github_username: '',
-        github_token: '',
-        colors: [],
-        counts: []
-    }, function(loadedConfig) {
+    xStore.get(config, function(loadedConfig) {
         if (loadedConfig) {
             config = loadedConfig
         }
@@ -171,7 +167,7 @@ function saveConfig(newConfig, cb) {
 
 xBrowser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if ('get_color' == request.name) {
-        sendResponse({error: undefined, color: eventColor(todayEvents), todayEvents: todayEvents})
+        sendResponse({error: undefined, color: eventColor(todayEvents), todayEvents: todayEvents, config: config})
         return true
     } else if ('set_config' == request.name) {
         saveConfig(request.config, function() {

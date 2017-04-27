@@ -12,6 +12,16 @@
       margin-top: 1em;
       font-size: 16px;
     }
+
+    th {
+      text-align: left;
+      padding-right: 1em;
+      font-weight: bolder;
+    }
+
+    td.center {
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -21,11 +31,11 @@
   <p>Please, specify your Github username below. If you also specify an <a href="https://github.com/settings/tokens" target="_blank" tabindex="-1">access token</a>, private contributions will be counted along with the public ones.</p>
   <table>
     <tr>
-      <td>GitHub username:</td>
+      <th>GitHub username:</th>
       <td><input type="text" id="github_username" size="25"></td>
     </tr>
     <tr>
-      <td><a href="https://github.com/settings/tokens" target="_blank" tabindex="-1">Access token</a> (optional):</td>
+      <th><a href="https://github.com/settings/tokens" target="_blank" tabindex="-1">Access token</a> (optional):</th>
       <td><input type="text" id="github_token" size="50"></td>
     </tr>
   </table>
@@ -43,6 +53,25 @@
       <td><input type="color" id="color_3" value="#239a3b"></td>
       <td><input type="number" id="count_3" value="10" min="0"></td>
       <td><input type="color" id="color_4" value="#196127"></td>
+    </tr>
+  </table>
+
+  <h2>Borders</h2>
+  <p>You can specify thickness (in pixels) or the borders here. 0 means the border is not shown.</p>
+  <table>
+    <tr>
+      <th>Border</th>
+      <td class="center">Left</td>
+      <td class="center">Top</td>
+      <td class="center">Bottom</td>
+      <td class="center">Right</td>
+    </tr>
+    <tr>
+      <th>Thickness</th>
+      <td><input type="number" id="thickness_left" min="0" max="500" value="10"></td>
+      <td><input type="number" id="thickness_top" min="0" max="500" value="0"></td>
+      <td><input type="number" id="thickness_bottom" min="0" max="500" value="0"></td>
+      <td><input type="number" id="thickness_right" min="0" max="500" value="0"></td>
     </tr>
   </table>
 

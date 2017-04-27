@@ -30,11 +30,18 @@ function saveConfig(e) {
             newCounts.push(document.getElementById('count_' + i).value)
         }
     }
+    var newBorders = [
+        document.getElementById('thickness_top').value,
+        document.getElementById('thickness_right').value,
+        document.getElementById('thickness_bottom').value,
+        document.getElementById('thickness_left').value
+    ]
     var newConfig = {
         github_username: document.getElementById('github_username').value,
         github_token: document.getElementById('github_token').value,
         colors: newColors,
-        counts: newCounts
+        counts: newCounts,
+        borders: newBorders
     }
     xBrowser.runtime.sendMessage({name: 'set_config', config: newConfig}, function(resp) {
         // Update status to let user know options were saved.
@@ -57,6 +64,10 @@ function restoreConfig() {
                 document.getElementById('count_' + i).value = config.counts[i]
             }
         }
+        document.getElementById('thickness_top').value = config.borders[0]
+        document.getElementById('thickness_right').value = config.borders[1]
+        document.getElementById('thickness_bottom').value = config.borders[2]
+        document.getElementById('thickness_left').value = config.borders[3]
     })
 }
 
