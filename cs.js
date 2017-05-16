@@ -76,11 +76,18 @@ function createBorderDivs(borders) {
     borderDivs.push(createBorderDiv(LEFT, borders[LEFT]))
 }
 
+function hideBorders() {
+    for (var i = 0; i < borderDivs.length; ++i) {
+        borderDivs[i].style.display = "none"
+    }
+}
+
 function setBorder(color, todayEvents) {
     for (var i = 0; i < borderDivs.length; ++i) {
         var div = borderDivs[i]
-        div.title = '' + todayEvents + ' contribution' + (1 == todayEvents ? '' : 's') + ' today'
+        div.title = '' + todayEvents + ' contribution' + (1 == todayEvents ? '' : 's') + ' today\n\nClick to hide'
         div.style.backgroundColor = color
+        div.onclick = hideBorders
     }
 }
 
