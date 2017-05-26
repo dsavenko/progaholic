@@ -20,18 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-var RELOAD_DATA_TIMEOUT_MIN = 5000
-var RELOAD_DATA_TIMEOUT_REGULAR = 1000 * 60 * 6 // 6 mins
-var RELOAD_DATA_TIMEOUT_MAX = 1000 * 60 * 60 // 1 hour
-
-var loadingUserData = false
-var reloadDataTimeout = RELOAD_DATA_TIMEOUT_MIN
+var RELOAD_DATA_TIMEOUT = 1000 * 60 * 6 // 6 mins
 
 var todayEvents = -1
 
+var partialTodayEvents = -1
+var requestCount = -1
+
 var config = {
-    github_username: '',
-    github_token: '',
+    accounts: [{
+        service: 'github',
+        username: '',
+        token: ''
+    }],
     colors: ['#cc1100', '#c6e48b', '#7bc96f', '#239a3b', '#196127'],
     counts: [        0,         4,         6,        10],
     borders: [0, 0, 0, 10]
@@ -97,72 +98,89 @@ function createGithubEventsUrl(username, accessToken) {
     return 'https://api.github.com/users/' + username + '/events' + ('' == accessToken ? '' : '?accessToken=' + accessToken)
 }
 
-function githubEventsUrl(cb) {
-    xStore.get({
-        github_username: '',
-        github_token: ''
-    }, function(items) {
-        if (!items) {
-            cb('Cant access items')
-        } else if ('' == items.github_username) {
-            cb('Github username is not set')
+function scheduleRequest(account, cb) {
+    var url = ''
+    if ('github' == account.service) {
+        if ('' != account.username) {
+            url = createGithubEventsUrl(account.username, account.token)
         } else {
-            cb(undefined, createGithubEventsUrl(items.github_username, items.github_token))
+            return cb(undefined, 0)
         }
-    })    
-}
-
-function scheduleRequest(cb) {
-    githubEventsUrl(function(err, url) {
-        if (err) {
-            cb(err)
+    } else {
+        return cb('Unsupported service ' + account.service)
+    }
+    loadJson(url, function(err2, data) {
+        if (err2) {
+            return cb(err2)
         } else {
-            loadJson(url, function(err2, data) {
-                if (err2) {
-                    reloadDataTimeout = Math.min(RELOAD_DATA_TIMEOUT_MAX, reloadDataTimeout * 2)
-                    return setTimeout(function() { scheduleRequest(cb) }, reloadDataTimeout)
-                }
-                reloadDataTimeout = RELOAD_DATA_TIMEOUT_MIN
-                cb(undefined, data)
-            })
+            cb(undefined, countTodayEvents(data))
         }
     })
 }
 
+function loadingUserData() {
+    return 0 < requestCount
+}
+
 function scheduleReloadUserData(singleShot) {
-    if (!loadingUserData) {
-        loadingUserData = true
-        scheduleRequest(function(err, events) {
-            loadingUserData = false
+    if (loadingUserData()) {
+        return
+    }
+    partialTodayEvents = 0
+    accounts = config.accounts
+    requestCount = accounts.length
+    for (var i = 0; i < requestCount; ++i) {
+        scheduleRequest(accounts[i], function(err, eventCount) {
             if (err) {
-                console.log('error making request to Github', err)
+                console.log('Error making request to an account', err)
             } else {
-                todayEvents = countTodayEvents(events)
+                partialTodayEvents += eventCount
             }
-            if (!singleShot) {
-                setTimeout(scheduleReloadUserData, RELOAD_DATA_TIMEOUT_REGULAR)
+            requestCount -= 1
+            if (0 == requestCount) {
+                todayEvents = partialTodayEvents
+                if (!singleShot) {
+                    setTimeout(scheduleReloadUserData, RELOAD_DATA_TIMEOUT)
+                }
             }
         })
     }
 }
 
 function loadConfig(cb) {
-    xStore.get(config, function(loadedConfig) {
-        if (loadedConfig) {
-            config = loadedConfig
+    xStore.get({config: ''}, function(x) {
+        loadedConfig = x.config
+        if ('' != loadedConfig) {
+            config = JSON.parse(loadedConfig)
         }
         if (cb) {
-            cb(loadedConfig)
+            cb(config)
         }
     })    
 }
 
+function sanitizeConfig(cfg) {
+    for (var i = 0; i < cfg.accounts.length; ++i) {
+        cfg.accounts[i].username = cfg.accounts[i].username.trim()
+    }
+}
+
 function saveConfig(newConfig, cb) {
-    xStore.set(newConfig, function() {
+    sanitizeConfig(newConfig)
+    xStore.set({config: JSON.stringify(newConfig)}, function() {
         config = newConfig
         scheduleReloadUserData(true)
         cb()
     })
+}
+
+function noAccounts(cfg) {
+    for (var i = 0; i < cfg.accounts.length; ++i) {
+        if ('' != cfg.accounts[i].username) {
+            return false
+        }
+    }
+    return true
 }
 
 xBrowser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -181,11 +199,9 @@ xBrowser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     return false
 })
 
-loadConfig(function() {
-    githubEventsUrl(function(err, url) {
-        if (err) {
-            xBrowser.runtime.openOptionsPage()
-        }
-        scheduleReloadUserData()
-    }) 
+loadConfig(function(cfg) {
+    if (noAccounts(cfg)) {
+        xBrowser.runtime.openOptionsPage()
+    }
+    scheduleReloadUserData()
 })

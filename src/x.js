@@ -22,7 +22,7 @@
 
 // =================== Cross-browser compatibility tricks =====================
 
-var xBrowser = typeof chrome != 'undefined' ? chrome : browser
+var xBrowser = chrome
 
 var xStore = xBrowser.storage.local
 

@@ -22,6 +22,11 @@
 
 function saveConfig(e) {
     e.preventDefault()
+    var newAccounts = [{
+        service: 'github',
+        username: document.getElementById('github_username').value,
+        token: document.getElementById('github_token').value
+    }]
     var newColors = []
     var newCounts = []
     for (var i = 0; i < 5; ++i) {
@@ -37,8 +42,7 @@ function saveConfig(e) {
         document.getElementById('thickness_left').value
     ]
     var newConfig = {
-        github_username: document.getElementById('github_username').value,
-        github_token: document.getElementById('github_token').value,
+        accounts: newAccounts,
         colors: newColors,
         counts: newCounts,
         borders: newBorders
@@ -56,8 +60,9 @@ function saveConfig(e) {
 function restoreConfig() {
     xBrowser.runtime.sendMessage({name: 'get_config'}, function(resp) {
         var config = resp.config
-        document.getElementById('github_username').value = config.github_username
-        document.getElementById('github_token').value = config.github_token
+        var acc = 0 == config.accounts.length ? {username:'', token: ''} : config.accounts[0]
+        document.getElementById('github_username').value = acc.username
+        document.getElementById('github_token').value = acc.token
         for (var i = 0; i < 5; ++i) {
             document.getElementById('color_' + i).value = config.colors[i]
             if (i < 4) {
