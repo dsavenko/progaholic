@@ -28,6 +28,15 @@ function saveConfig(e) {
         token: document.getElementById('github_token').value,
         url: document.getElementById('github_url').value
     }]
+    var gitlabUsername = document.getElementById('gitlab_username').value
+    if (gitlabUsername && '' != gitlabUsername.trim()) {
+        newAccounts.push({
+            service: 'gitlab',
+            username: gitlabUsername,
+            token: document.getElementById('gitlab_token').value,
+            url: document.getElementById('gitlab_url').value
+        })
+    }
     var newColors = []
     var newCounts = []
     for (var i = 0; i < 5; ++i) {
@@ -61,10 +70,13 @@ function saveConfig(e) {
 function restoreConfig() {
     xBrowser.runtime.sendMessage({name: 'get_config'}, function(resp) {
         var config = resp.config
-        var acc = 0 == config.accounts.length ? {username:'', token: ''} : config.accounts[0]
-        document.getElementById('github_username').value = acc.username
-        document.getElementById('github_token').value = acc.token
-        document.getElementById('github_url').value = acc.url
+        for (var i = 0; i < config.accounts.length; ++i) {
+            var acc = config.accounts[i]
+            var s = acc.service
+            document.getElementById(s + '_username').value = acc.username
+            document.getElementById(s + '_token').value = acc.token
+            document.getElementById(s + '_url').value = acc.url
+        }
         for (var i = 0; i < 5; ++i) {
             document.getElementById('color_' + i).value = config.colors[i]
             if (i < 4) {
