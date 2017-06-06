@@ -27,11 +27,14 @@ var todayEvents = -1
 var partialTodayEvents = -1
 var requestCount = -1
 
+var DEFAULT_GITHUB_URL = 'https://api.github.com/'
+
 var config = {
     accounts: [{
         service: 'github',
         username: '',
-        token: ''
+        token: '',
+        url: ''
     }],
     colors: ['#cc1100', '#c6e48b', '#7bc96f', '#239a3b', '#196127'],
     counts: [        0,         4,         6,        10],
@@ -94,15 +97,25 @@ function eventColor(count) {
     return config.colors[0]
 }
 
-function createGithubEventsUrl(username, accessToken) {
-    return 'https://api.github.com/users/' + username + '/events' + ('' == accessToken ? '' : '?accessToken=' + accessToken)
+function createGithubEventsUrl(url, username, accessToken) {
+    var u = url ? url.trim() : ''
+    if ('' == u) {
+        u = DEFAULT_GITHUB_URL
+    }
+    if (!u.endsWith('/')) {
+        u = u + '/'
+    }
+    if (!u.startsWith('http://') && !u.startsWith('https://')) {
+        u = 'https://' + u
+    }
+    return u + 'users/' + username + '/events' + ('' == accessToken ? '' : '?accessToken=' + accessToken)
 }
 
 function scheduleRequest(account, cb) {
     var url = ''
     if ('github' == account.service) {
         if ('' != account.username) {
-            url = createGithubEventsUrl(account.username, account.token)
+            url = createGithubEventsUrl(account.url, account.username, account.token)
         } else {
             return cb(undefined, 0)
         }

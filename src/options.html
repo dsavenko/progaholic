@@ -28,7 +28,7 @@
 <body>
 
   <h2>Accounts</h2>
-  <p>Please, specify your Github username below. If you also specify an <a href="https://github.com/settings/tokens" target="_blank" tabindex="-1">access token</a>, private contributions will be counted along with the public ones.</p>
+  <p>Please, specify your account(s) below. If you also specify access tokens, private contributions will be counted along with the public ones.</p>
   <table>
     <tr>
       <th>GitHub username:</th>
@@ -37,6 +37,13 @@
     <tr>
       <th><a href="https://github.com/settings/tokens" target="_blank" tabindex="-1">Access token</a> (optional):</th>
       <td><input type="text" id="github_token" size="50"></td>
+    </tr>
+    <tr>
+      <th valign="top">API URL (optional):</th>
+      <td>
+        <input type="text" id="github_url" size="50">
+        <br/><small>Leave it blank for the GitHub. For a standalone GitHub, provide the API URL (e.g. 'api.github.com').</small>
+      </td>
     </tr>
   </table>
 

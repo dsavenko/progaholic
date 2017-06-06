@@ -25,7 +25,8 @@ function saveConfig(e) {
     var newAccounts = [{
         service: 'github',
         username: document.getElementById('github_username').value,
-        token: document.getElementById('github_token').value
+        token: document.getElementById('github_token').value,
+        url: document.getElementById('github_url').value
     }]
     var newColors = []
     var newCounts = []
@@ -63,6 +64,7 @@ function restoreConfig() {
         var acc = 0 == config.accounts.length ? {username:'', token: ''} : config.accounts[0]
         document.getElementById('github_username').value = acc.username
         document.getElementById('github_token').value = acc.token
+        document.getElementById('github_url').value = acc.url
         for (var i = 0; i < 5; ++i) {
             document.getElementById('color_' + i).value = config.colors[i]
             if (i < 4) {
