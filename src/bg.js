@@ -28,6 +28,7 @@ var partialTodayEvents = -1
 var requestCount = -1
 
 var DEFAULT_GITHUB_URL = 'https://api.github.com/'
+var DEFAULT_GITLAB_URL = 'https://gitlab.com/'
 
 var config = {
     accounts: [{
@@ -97,18 +98,35 @@ function eventColor(count) {
     return config.colors[0]
 }
 
-function createGithubEventsUrl(url, username, accessToken) {
-    var u = url ? url.trim() : ''
-    if ('' == u) {
-        u = DEFAULT_GITHUB_URL
-    }
+function sanitizeUrl(url, defaultUrl) {
+    var u = url ? url.trim() : defaultUrl
     if (!u.endsWith('/')) {
         u = u + '/'
     }
     if (!u.startsWith('http://') && !u.startsWith('https://')) {
         u = 'https://' + u
     }
-    return u + 'users/' + username + '/events' + ('' == accessToken ? '' : '?accessToken=' + accessToken)
+    return u
+}
+
+function encode(t) {
+    return encodeURIComponent(t)
+}
+
+function encodeIf(prefix, t) {
+    return '' == t ? '' : prefix + encode(t)
+}
+
+function createGitlabIdUrl(url, username, accessToken) {
+    return sanitizeUrl(url, DEFAULT_GITLAB_URL) + 'api/v4/users?username=' + encode(username) + encodeIf('?private_token=', accessToken)
+}
+
+function createGitlabEventsUrl(url, id, accessToken) {
+    return sanitizeUrl(url, DEFAULT_GITLAB_URL) + 'api/v4/' + encode(id) + '/events' + encodeIf('?private_token=', accessToken)
+}
+
+function createGithubEventsUrl(url, username, accessToken) {
+    return sanitizeUrl(url, DEFAULT_GITHUB_URL) + 'users/' + encode(username) + '/events' + encodeIf('?accessToken=', accessToken)
 }
 
 function scheduleRequest(account, cb) {
@@ -119,16 +137,40 @@ function scheduleRequest(account, cb) {
         } else {
             return cb(undefined, 0)
         }
+        loadJson(url, function(err2, data) {
+            if (err2) {
+                return cb(err2)
+            } else {
+                cb(undefined, countTodayEvents(data))
+            }
+        })
+    } else if ('gitlab' == account.service) {
+        if ('' != account.username) {
+            url = createGitlabIdUrl(account.url, account.username, account.token)
+        } else {
+            return cb(undefined, 0)
+        }
+        loadJson(url, function(err2, data) {
+            if (err2) {
+                return cb(err2)
+            } else {
+                if (data && data.length && 0 < data.length && data[0] && data[0].id) {
+                    var eventsUrl = createGitlabEventsUrl(account.url, data[0].id, account.token)
+                    loadJson(eventsUrl, function(err3, data2) {
+                        if (err3) {
+                            return cb(err3)
+                        } else {
+                            cb(undefined, countTodayEvents(data2))
+                        }
+                    })
+                } else {
+                    cb('GitLab user not found')
+                }                
+            }
+        })
     } else {
         return cb('Unsupported service ' + account.service)
     }
-    loadJson(url, function(err2, data) {
-        if (err2) {
-            return cb(err2)
-        } else {
-            cb(undefined, countTodayEvents(data))
-        }
-    })
 }
 
 function loadingUserData() {

@@ -45,16 +45,21 @@
         <br/><small>Leave it blank for the GitHub. For a standalone GitHub, provide the API URL (e.g. 'api.github.com').</small>
       </td>
     </tr>
+
     <tr>
         <td colspan="2">&nbsp;</td>
     </tr>
+    
     <tr>
-      <th>GitLab username or email:</th>
+      <th>GitLab username:</th>
       <td><input type="text" id="gitlab_username" size="25"></td>
     </tr>
     <tr>
-      <th><a href="https://gitlab.com/profile/personal_access_tokens" target="_blank" tabindex="-1">Access token</a> (optional):</th>
-      <td><input type="text" id="gitlab_token" size="50"></td>
+      <th valign="top"><a href="https://gitlab.com/profile/personal_access_tokens" target="_blank" tabindex="-1">Access token</a>:</th>
+      <td>
+        <input type="text" id="gitlab_token" size="50">
+        <br/><small>For GitLab, token is mandatory.</small>
+      </td>
     </tr>
     <tr>
       <th valign="top">URL (optional):</th>
