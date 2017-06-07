@@ -46,7 +46,8 @@ function loadUrl(url, callback) {
     var x = new XMLHttpRequest()
     x.open('GET', url)
     x.onload = function() {
-        if (x.status == 200) {
+        // OK statuses for us: 200 OK, 304 Not modified
+        if (x.status == 200 || x.status == 304) {
             callback(undefined, x.responseText)
         } else {
             console.log('status: ' + x.statusText)
@@ -118,11 +119,11 @@ function encodeIf(prefix, t) {
 }
 
 function createGitlabIdUrl(url, username, accessToken) {
-    return sanitizeUrl(url, DEFAULT_GITLAB_URL) + 'api/v4/users?username=' + encode(username) + encodeIf('?private_token=', accessToken)
+    return sanitizeUrl(url, DEFAULT_GITLAB_URL) + 'api/v4/users?username=' + encode(username) + encodeIf('&private_token=', accessToken)
 }
 
 function createGitlabEventsUrl(url, id, accessToken) {
-    return sanitizeUrl(url, DEFAULT_GITLAB_URL) + 'api/v4/' + encode(id) + '/events' + encodeIf('?private_token=', accessToken)
+    return sanitizeUrl(url, DEFAULT_GITLAB_URL) + 'api/v4/users/' + encode(id) + '/events' + encodeIf('?private_token=', accessToken)
 }
 
 function createGithubEventsUrl(url, username, accessToken) {
@@ -184,7 +185,7 @@ function scheduleReloadUserData(singleShot) {
     partialTodayEvents = 0
     accounts = config.accounts
     requestCount = accounts.length
-    for (var i = 0; i < requestCount; ++i) {
+    for (var i = 0; i < accounts.length; ++i) {
         scheduleRequest(accounts[i], function(err, eventCount) {
             if (err) {
                 console.log('Error making request to an account', err)
