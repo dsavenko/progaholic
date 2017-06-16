@@ -42,7 +42,7 @@
       <th valign="top">API URL (optional):</th>
       <td>
         <input type="text" id="github_url" size="50">
-        <br/><small>Leave it blank for the GitHub. For a standalone GitHub, provide the API URL (e.g. 'api.github.com').</small>
+        <br/><small>Leave it blank for GitHub.com. For a standalone GitHub, provide the API URL (e.g. 'api.github.com').</small>
       </td>
     </tr>
 
@@ -65,7 +65,30 @@
       <th valign="top">URL (optional):</th>
       <td>
         <input type="text" id="gitlab_url" size="50">
-        <br/><small>Leave it blank for the GitLab. For a standalone GitLab, provide it's normal URL (e.g. 'gitlab.com').</small>
+        <br/><small>Leave it blank for GitLab.com. For a standalone GitLab, provide it's normal URL (e.g. 'gitlab.com').</small>
+      </td>
+    </tr>
+
+    <tr>
+        <td colspan="2">&nbsp;</td>
+    </tr>
+    
+    <tr>
+      <th>Bitbucket username:</th>
+      <td><input type="text" id="bitbucket_username" size="25"></td>
+    </tr>
+    <tr>
+      <th valign="top"><a href="https://bitbucket.org/account" target="_blank" tabindex="-1">App password</a>:</th>
+      <td>
+        <input type="text" id="bitbucket_token" size="50">
+        <br/><small>App password is mandatory. Do <strong>not</strong> use your account password. Create a separate app password with account/read permissions instead.</small>
+      </td>
+    </tr>
+    <tr>
+      <th valign="top">URL (optional):</th>
+      <td>
+        <input type="text" id="bitbucket_url" size="50">
+        <br/><small>Leave it blank for Bitbucket.org. For a standalone Bitbucket server, provide it's API URL (e.g. 'api.bitbucket.com').</small>
       </td>
     </tr>
   </table>

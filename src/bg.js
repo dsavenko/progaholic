@@ -29,6 +29,7 @@ var requestCount = -1
 
 var DEFAULT_GITHUB_URL = 'https://api.github.com/'
 var DEFAULT_GITLAB_URL = 'https://gitlab.com/'
+var DEFAULT_BITBUCKET_URL = 'https://api.bitbucket.org/'
 
 var config = {
     accounts: [{
@@ -42,7 +43,7 @@ var config = {
     borders: [0, 0, 0, 10]
 }
 
-function loadUrl(url, callback) {
+function loadUrl(url, callback, user, password) {
     var x = new XMLHttpRequest()
     x.open('GET', url)
     x.onload = function() {
@@ -57,28 +58,34 @@ function loadUrl(url, callback) {
     x.onerror = function(e) {
         callback(e)
     }
+    if (user && password) {
+        x.setRequestHeader('Authorization', 'Basic ' + btoa(user + ':' + password))
+    }
     x.send()
 }
 
-function loadJson(url, callback) {
+function loadJson(url, callback, user, password) {
     loadUrl(url, function(e, txt) {
         if (e) {
             callback(e)
         } else {
             callback(undefined, JSON.parse(txt))
         }
-    })
+    }, user, password)
 }
 
 function sameDay(d1, d2) {
     return d1.getDate() == d2.getDate() && d1.getMonth() == d2.getMonth() && d1.getFullYear() == d2.getFullYear()
 }
 
-function countTodayEvents(events) {
+function countTodayEvents(events, createdFieldName) {
     var now = new Date()
     var ret = 0
+    if (!createdFieldName) {
+        createdFieldName = 'created_at'
+    }
     for (var i = 0; i < events.length; ++i) {
-        var created = new Date(events[i].created_at)
+        var created = new Date(events[i][createdFieldName])
         if (!sameDay(now, created)) {
             break
         }
@@ -130,6 +137,10 @@ function createGithubEventsUrl(url, username, accessToken) {
     return sanitizeUrl(url, DEFAULT_GITHUB_URL) + 'users/' + encode(username) + '/events' + encodeIf('?accessToken=', accessToken)
 }
 
+function createBitbucketEventsUrl(url, username) {
+    return sanitizeUrl(url, DEFAULT_BITBUCKET_URL) + '1.0/users/' + encode(username) + '/events'
+}
+
 function scheduleRequest(account, cb) {
     var url = ''
     if ('github' == account.service) {
@@ -145,6 +156,19 @@ function scheduleRequest(account, cb) {
                 cb(undefined, countTodayEvents(data))
             }
         })
+    } else if ('bitbucket' == account.service) {
+        if ('' != account.username) {
+            url = createBitbucketEventsUrl(account.url, account.username)
+        } else {
+            return cb(undefined, 0)
+        }
+        loadJson(url, function(err2, data) {
+            if (err2) {
+                return cb(err2)
+            } else {
+                cb(undefined, countTodayEvents(data.events, 'utc_created_on'))
+            }
+        }, account.username, account.token)
     } else if ('gitlab' == account.service) {
         if ('' != account.username) {
             url = createGitlabIdUrl(account.url, account.username, account.token)
@@ -182,8 +206,15 @@ function scheduleReloadUserData(singleShot) {
     if (loadingUserData()) {
         return
     }
-    partialTodayEvents = 0
     accounts = config.accounts
+    if (0 >= accounts.length) {
+        todayEvents = 0
+        if (!singleShot) {
+            setTimeout(scheduleReloadUserData, RELOAD_DATA_TIMEOUT)
+        }
+        return
+    }
+    partialTodayEvents = 0
     requestCount = accounts.length
     for (var i = 0; i < accounts.length; ++i) {
         scheduleRequest(accounts[i], function(err, eventCount) {

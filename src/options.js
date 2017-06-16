@@ -20,23 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-function saveConfig(e) {
-    e.preventDefault()
-    var newAccounts = [{
-        service: 'github',
-        username: document.getElementById('github_username').value,
-        token: document.getElementById('github_token').value,
-        url: document.getElementById('github_url').value
-    }]
-    var gitlabUsername = document.getElementById('gitlab_username').value
-    if (gitlabUsername && '' != gitlabUsername.trim()) {
-        newAccounts.push({
-            service: 'gitlab',
-            username: gitlabUsername,
-            token: document.getElementById('gitlab_token').value,
-            url: document.getElementById('gitlab_url').value
+function addAccount(service, accounts) {
+    var username = document.getElementById(service + '_username').value
+    if (username && '' != username.trim()) {
+        accounts.push({
+            service: service,
+            username: username,
+            token: document.getElementById(service + '_token').value,
+            url: document.getElementById(service + '_url').value
         })
     }
+}
+
+function saveConfig(e) {
+    e.preventDefault()
+    var newAccounts = []
+    addAccount('github', newAccounts)
+    addAccount('gitlab', newAccounts)
+    addAccount('bitbucket', newAccounts)
     var newColors = []
     var newCounts = []
     for (var i = 0; i < 5; ++i) {
