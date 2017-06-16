@@ -5,7 +5,12 @@
 
     "description": "Shows how much you contributed today. Strive for the dark green! Contribute more for the greater good! Be a progaholic!",
 
-    "icons": {},
+    "author": "Dmitry Savenko",
+    "homepage_url": "https://github.com/dsavenko/progaholic",
+
+    "icons": {
+        "128": "icon.png"
+    },
 
     "permissions": [
         "storage",
