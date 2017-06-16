@@ -1,4 +1,2 @@
 
 * Support Bitbucket
-
-* Support Gitlab
