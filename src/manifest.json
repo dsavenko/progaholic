@@ -3,7 +3,7 @@
     "name": "Progaholic",
     "version": "1.0",
 
-    "description": "Shows how much you contributed today. Strive for the dark green! Contribute more for the greater good! Be a progaholic!",
+    "description": "Progaholic is a browser plugin to show how much you contributed today. The plugin counts your contributions (pushes, issues, etc) and shows how active you've been today on every web page you visit. The idea is to encourage you to do more instead of pointless web surfing. Suitable for programmers, technical writers, QA engineers and anyone, who use GitHub, GitLab or BitBucket every day. Contribute more for the greater good! Be a progaholic!",
 
     "author": "Dmitry Savenko",
     "homepage_url": "https://github.com/dsavenko/progaholic",
@@ -13,8 +13,7 @@
     },
 
     "permissions": [
-        "storage",
-        "https://api.github.com/*"
+        "storage"
     ],
 
     "background": {
