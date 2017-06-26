@@ -33,7 +33,7 @@ When Mozilla releases a [WebExtensions API for theming](https://blog.mozilla.org
 
 ## Feedback
 
-Please, send me feedback, like bug reports or feature requests! The best way would be by filing [issues here](https://github.com/dsavenko/progaholic/issues). You can also mail me at ds@dsavenko.com.
+Please, send me feedback, like bug reports, feature requests or pull requests! The best way would be by filing [issues here](https://github.com/dsavenko/progaholic/issues). You can also mail me at ds@dsavenko.com.
 
 ## Icon
 
