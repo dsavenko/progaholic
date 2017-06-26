@@ -9,7 +9,7 @@ Suitable for programmers, technical writers, QA engineers and anyone, who use Gi
 
 ## Setup
 
-When you install the plugin, its settings page opens. You need to specify at least on account there. Services currently supported are [GitHub](github.com), [GitLab](gitlab.com) and [BitBucket](bitbucket.org). For GitHub, you may not specify any access token, in which case only your public events will be counted. For the other two, you have to specify an access token.
+When you install the plugin, its settings page opens. You need to specify at least on account there. Services currently supported are [GitHub](https://github.com), [GitLab](https://gitlab.com) and [BitBucket](https://bitbucket.org). For GitHub, you may not specify any access token, in which case only your public events will be counted. For the other two, you have to specify an access token.
 
 You can point the plugin to the private (corporate) entries of the supported services. By default, the public ones are used.
 
@@ -21,7 +21,7 @@ The plugin can show your activity by displaying colored bars at the edges of web
 
 * thickness of the bars (by default, 10 pixels)
 
-* colors and intervals. The plugin can use up to 5 different colors to display your contribution activity based on the number of contributions. By default, it's red for 0 contributions, and different greens the for (0, 4], (4, 6], (6, 10] and (10, infinity) intervals. You can change the colors and the intervals.
+* colors and intervals. The plugin can use up to 5 different colors to display your contribution activity based on the number of contributions. By default, it's red for 0 contributions, and different greens the for `(0, 4]`, `(4, 6]`, `(6, 10]` and `(10, infinity)` intervals. You can change the colors and the intervals.
 
 You can hover the bars to see the exact number of contributions. Clicking on the bars will hide them for the current page.
 
