@@ -15,7 +15,7 @@ Suitable for programmers, technical writers, QA engineers and anyone, who use Gi
 
 When you install the plugin, its settings page opens. You need to specify at least on account there. Services currently supported are [GitHub](https://github.com), [GitLab](https://gitlab.com) and [BitBucket](https://bitbucket.org). For GitHub, you may not specify any access token, in which case only your public events will be counted. For the other two, you have to specify an access token.
 
-You can point the plugin to the private (corporate) entries of the supported services. By default, the public ones are used.
+You can point the plugin to private (corporate) entries of the supported services. By default, the public ones are used.
 
 Shortly after you give the plugin one or more accounts, it will show your contributions count on **any page of any website** you visit. Contributions are all events you do, including pushes, dealing with issues, managing repositories, etc. If you give multiple accounts to the plugin, their contributions will be summed. Only **today** contributions are taken into account. This means at 12:00 a.m. your contribution count is reset to 0.
 
