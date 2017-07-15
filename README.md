@@ -11,6 +11,18 @@ Suitable for programmers, technical writers, QA engineers and anyone, who use Gi
 
 ![Plugin in action](misc/screenshot-1.png)
 
+## Installation
+
+### Firefox
+
+Visit [this page](https://addons.mozilla.org/en-US/firefox/addon/progaholic/) and click `Add to Firefox`. 
+
+**Note for the mobile FF:** you can install the plugin, but currently the options page doesn't open [#3](https://github.com/dsavenko/progaholic/issues/3), which makes it useless on mobile. Will fix the issue soon.
+
+### Chrome
+
+Coming soon [#4](https://github.com/dsavenko/progaholic/issues/4)...
+
 ## Setup
 
 When you install the plugin, its settings page opens. You need to specify at least on account there. Services currently supported are [GitHub](https://github.com), [GitLab](https://gitlab.com) and [BitBucket](https://bitbucket.org). For GitHub, you may not specify any access token, in which case only your public events will be counted. For the other two, you have to specify an access token.
