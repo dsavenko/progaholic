@@ -17,7 +17,7 @@ Suitable for programmers, technical writers, QA engineers and anyone, who use Gi
 
 Visit [this page](https://addons.mozilla.org/en-US/firefox/addon/progaholic/) and click `Add to Firefox`. 
 
-**Note for the mobile FF:** you can install the plugin, but currently the options page doesn't open [#3](https://github.com/dsavenko/progaholic/issues/3), which makes it useless on mobile. Will fix the issue soon.
+**Note for the mobile FF:** please, see [#3](https://github.com/dsavenko/progaholic/issues/3). The plugin will work on mobile starting FF 56. Earlier versions don't support extension options pages, so the plugin is useless.
 
 ### Chrome
 
