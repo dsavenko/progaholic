@@ -15,13 +15,13 @@ Suitable for programmers, technical writers, QA engineers and anyone, who use Gi
 
 ### Firefox
 
-Visit [this page](https://addons.mozilla.org/en-US/firefox/addon/progaholic/) and click `Add to Firefox`. 
+Install from AMO (addons.mozilla.org). Visit [this page](https://addons.mozilla.org/en-US/firefox/addon/progaholic/) and click `Add to Firefox`. 
 
 **Note for the mobile FF:** please, see [#3](https://github.com/dsavenko/progaholic/issues/3). The plugin will work on mobile starting FF 56. Earlier versions don't support extension options pages, so the plugin is useless.
 
 ### Chrome
 
-Coming soon [#4](https://github.com/dsavenko/progaholic/issues/4)...
+Install from Google Web Store. Visit [this page](https://chrome.google.com/webstore/detail/progaholic/eeonmbcjjgcjpmkfiiangadjffofkhgl) and click `Add to Chrome`. 
 
 ## Setup
 
