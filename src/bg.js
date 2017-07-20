@@ -38,7 +38,7 @@ var config = {
         token: '',
         url: ''
     }],
-    colors: ['#cc1100', '#c6e48b', '#7bc96f', '#239a3b', '#196127'],
+    colors: ['#cc1100', '#f1959c', '#7bc96f', '#239a3b', '#196127'],
     counts: [        0,         4,         6,        10],
     borders: [0, 0, 0, 10]
 }
