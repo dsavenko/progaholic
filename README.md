@@ -37,7 +37,7 @@ The plugin can show your activity by displaying colored bars at the edges of web
 
 * thickness of the bars (by default, 10 pixels)
 
-* colors and intervals. The plugin can use up to 5 different colors to display your contribution activity based on the number of contributions. By default, it's red for 0 contributions, and different greens the for `(0, 4]`, `(4, 6]`, `(6, 10]` and `(10, infinity)` intervals. You can change the colors and the intervals.
+* colors and intervals. The plugin can use up to 5 different colors to display your contribution activity based on the number of contributions. By default, it's red for 0 contributions, rose for `(0, 4]`, and different greens the for the `(4, 6]`, `(6, 10]` and `(10, infinity)` intervals. You can change the colors and the intervals.
 
 You can hover the bars to see the exact number of contributions. Clicking on the bars will hide them for the current page.
 
